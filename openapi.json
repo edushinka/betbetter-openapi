@@ -1,0 +1,99 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Bet Better Free Sports Betting Model API",
+    "description": "Free, no-key JSON feeds of Bet Better's model output: win probabilities, fair odds and a dated verdict for every published selection. The feed carries the model's own numbers only — no bookmaker names and no market prices. Licensed CC BY 4.0: free to use with attribution to Bet Better (https://betbetter.world). Model estimates for research. Not betting advice. 18+. Gamble responsibly.",
+    "version": "1.1.0",
+    "termsOfService": "https://betbetter.world/Terms",
+    "contact": { "name": "Bet Better", "url": "https://betbetter.world/api/" },
+    "license": { "name": "CC BY 4.0", "url": "https://creativecommons.org/licenses/by/4.0/" }
+  },
+  "servers": [{ "url": "https://betbetter.world" }],
+  "paths": {
+    "/{league}/picks": {
+      "get": {
+        "summary": "Combined picks feed (game lines + player props) for a league",
+        "operationId": "getPicks",
+        "parameters": [
+          { "$ref": "#/components/parameters/league" },
+          { "$ref": "#/components/parameters/format" }
+        ],
+        "responses": { "200": { "description": "Current selections for the league", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PickFeed" } } } } }
+      }
+    },
+    "/{league}/prop-bets": {
+      "get": {
+        "summary": "Player-prop selections only for a league",
+        "operationId": "getPropBets",
+        "parameters": [
+          { "$ref": "#/components/parameters/league" },
+          { "$ref": "#/components/parameters/format" }
+        ],
+        "responses": { "200": { "description": "Current player-prop selections", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PickFeed" } } } } }
+      }
+    },
+    "/results": {
+      "get": {
+        "summary": "Verified settled record (wins and losses) with hit rate and ROI by sport",
+        "operationId": "getResults",
+        "parameters": [{ "$ref": "#/components/parameters/format" }],
+        "responses": { "200": { "description": "Settled record summary", "content": { "application/json": {} } } }
+      }
+    },
+    "/scorecard": {
+      "get": {
+        "summary": "Settled model performance by sport and market (hit rate, flat-1-unit ROI, CLV)",
+        "operationId": "getScorecard",
+        "parameters": [{ "$ref": "#/components/parameters/format" }],
+        "responses": { "200": { "description": "Per-market performance", "content": { "application/json": {} } } }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "league": {
+        "name": "league", "in": "path", "required": true,
+        "description": "League path segment. Soccer and tennis use two segments (e.g. soccer/epl, tennis/atp) — substitute the whole segment.",
+        "schema": { "type": "string", "enum": ["afl", "mlb", "nba", "nfl", "nhl", "ncaaf", "nrl", "ufc", "wnba", "cricket", "tennis/atp", "tennis/wta", "soccer/epl", "soccer/la-liga", "soccer/serie-a", "soccer/bundesliga", "soccer/ligue-1", "soccer/world-cup"] }
+      },
+      "format": {
+        "name": "format", "in": "query", "required": true,
+        "description": "Must be 'json' — without it the endpoint returns the human HTML page.",
+        "schema": { "type": "string", "enum": ["json"] }
+      }
+    },
+    "schemas": {
+      "PickFeed": {
+        "type": "object",
+        "properties": {
+          "site": { "type": "string", "example": "Bet Better" },
+          "page": { "type": "string", "format": "uri", "description": "Canonical human page for this feed" },
+          "sport": { "type": "string", "example": "MLB" },
+          "type": { "type": "string", "example": "picks" },
+          "updatedUtc": { "type": "string", "format": "date-time" },
+          "licence": { "type": "string", "description": "CC BY 4.0 — free to use with attribution to Bet Better (https://betbetter.world)" },
+          "attribution": { "type": "string" },
+          "docs": { "type": "string", "format": "uri" },
+          "disclaimer": { "type": "string" },
+          "count": { "type": "integer" },
+          "picks": { "$ref": "#/components/schemas/PickList" }
+        }
+      },
+      "Pick": {
+        "type": "object",
+        "properties": {
+          "game": { "type": "string", "description": "Fixture, e.g. 'Melbourne Demons vs Fremantle Dockers'" },
+          "gameTimeUtc": { "type": "string", "format": "date-time" },
+          "market": { "type": "string", "description": "Market name, e.g. 'Total Points Over/Under'" },
+          "selection": { "type": "string", "description": "The model's selection" },
+          "line": { "type": "number", "nullable": true, "description": "Market line where applicable" },
+          "modelProbabilityPct": { "type": "number", "description": "Model win probability, percent" },
+          "fairOdds": { "type": "number", "description": "Decimal odds implied by the model probability" },
+          "confidence": { "type": "string", "enum": ["HIGH", "LEAN", "LONG-SHOT"] },
+          "verdict": { "type": "string", "description": "Dated plain-English verdict" }
+        }
+      },
+      "PickList": { "type": "array", "items": { "$ref": "#/components/schemas/Pick" } }
+    }
+  }
+}
