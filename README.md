@@ -4,7 +4,7 @@ The machine-readable spec for the free, no-key [Bet Better](https://betbetter.wo
 
 - **Live spec (canonical)**: https://betbetter.world/api/openapi.json
 - **Human docs**: https://betbetter.world/api/
-- **Python client**: [`pip install betbetter`](https://github.com/betbetterworld/betbetter-python)
+- **Python client**: [`pip install betbetter`](https://github.com/edushinka/betbetter-python)
 - **MCP server for AI agents**: [`npx betbetter-mcp`](https://www.npmjs.com/package/betbetter-mcp)
 
 Try it now, no key needed:
