@@ -1,0 +1,4 @@
+openapi-spec-validator>=0.7
+jsonschema>=4.21
+requests>=2.31
+pytest>=8.0
